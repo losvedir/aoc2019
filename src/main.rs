@@ -4,10 +4,11 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
 mod vm;
 
 fn main() {
-    let day = 6;
+    let day = 7;
 
     match day {
         1 => {
@@ -31,6 +32,10 @@ fn main() {
         }
         6 => {
             day6::puzzle1();
+        }
+        7 => {
+            day7::puzzle1();
+            day7::puzzle2();
         }
         _ => unreachable!(),
     }

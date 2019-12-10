@@ -1,17 +1,26 @@
-use std::io;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::Sender;
 
-pub struct VM {
+pub struct VM<'a> {
     pub memory: Vec<i32>,
     iptr: usize,
     halted: bool,
+    input: Option<&'a Receiver<i32>>,
+    output: Option<&'a Sender<i32>>,
 }
 
-impl VM {
-    pub fn initialize(mem: Vec<i32>) -> VM {
+impl<'a> VM<'a> {
+    pub fn initialize(
+        mem: Vec<i32>,
+        input: Option<&'a Receiver<i32>>,
+        output: Option<&'a Sender<i32>>,
+    ) -> VM<'a> {
         VM {
             memory: mem,
             iptr: 0,
             halted: false,
+            input: input,
+            output: output,
         }
     }
 
@@ -43,18 +52,15 @@ impl VM {
                 self.iptr += 4;
             }
             3 => {
-                println!("input:");
-                let mut input = String::new();
-                io::stdin().read_line(&mut input).unwrap();
-
-                let val: i32 = input.trim().parse().unwrap();
+                let val: i32 = self.input.unwrap().recv().unwrap();
                 let p1 = self.read_relative(1, true) as usize;
                 self.write(p1, val);
 
                 self.iptr += 2;
             }
             4 => {
-                println!("{}", self.read_relative(1, false));
+                let val = self.read_relative(1, false);
+                self.output.unwrap().send(val).unwrap();
                 self.iptr += 2;
             }
             5 => {
@@ -148,7 +154,7 @@ impl VM {
 
 #[test]
 fn test_step() {
-    let mut vm = VM::initialize(vec![1, 0, 0, 0, 99]);
+    let mut vm = VM::initialize(vec![1, 0, 0, 0, 99], None, None);
     vm.run()
 }
 
@@ -159,4 +165,14 @@ fn test_immediate() {
     assert_eq!(op, 2);
     assert_eq!(im1, false);
     assert_eq!(im2, true);
+}
+
+#[test]
+fn test_channels() {
+    let (snd1, rcv1) = channel();
+    let (snd2, rcv2) = channel();
+    let mut vm: VM = VM::initialize(vec![3, 5, 4, 5, 99, 0], Some(&rcv1), Some(&snd2));
+    snd1.send(77).unwrap();
+    vm.run();
+    assert_eq!(rcv2.recv().unwrap(), 77);
 }
