@@ -86,20 +86,20 @@ fn test_vm_run() {
     let mem1 = vec![1, 0, 0, 0, 99];
     let mut vm = VM::initialize(mem1, None, None);
     vm.run();
-    assert_eq!(vm.memory, vec![2, 0, 0, 0, 99]);
+    assert_eq!(vm.get_memory(), vec![2, 0, 0, 0, 99]);
 
     let mem2 = vec![2, 3, 0, 3, 99];
     let mut vm = VM::initialize(mem2, None, None);
     vm.run();
-    assert_eq!(vm.memory, vec![2, 3, 0, 6, 99]);
+    assert_eq!(vm.get_memory(), vec![2, 3, 0, 6, 99]);
 
     let mem3 = vec![2, 4, 4, 5, 99, 0];
     let mut vm = VM::initialize(mem3, None, None);
     vm.run();
-    assert_eq!(vm.memory, vec![2, 4, 4, 5, 99, 9801]);
+    assert_eq!(vm.get_memory(), vec![2, 4, 4, 5, 99, 9801]);
 
     let mem4 = vec![1, 1, 1, 4, 99, 5, 6, 0, 99];
     let mut vm = VM::initialize(mem4, None, None);
     vm.run();
-    assert_eq!(vm.memory, vec![30, 1, 1, 4, 2, 5, 6, 0, 99]);
+    assert_eq!(vm.get_memory(), vec![30, 1, 1, 4, 2, 5, 6, 0, 99]);
 }

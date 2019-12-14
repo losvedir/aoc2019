@@ -53,8 +53,3 @@ fn count_orbits(map: String) -> i32 {
     // let (wts, _) = petgraph::algo::bellman_ford(g, com).unwrap();
     // wts.sum()
 }
-
-#[test]
-fn test1() {
-    let input = "COM)B\nB)C\nC)D\nD)E\nE)F\nB)G\nG)H\nD)I\nE)J\nJ)K\nK)L".to_string();
-}
